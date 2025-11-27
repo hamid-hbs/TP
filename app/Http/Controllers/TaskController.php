@@ -45,7 +45,7 @@ class TaskController extends Controller
     
     public function update(Task $task)
     {
-        $this->authorize('update', $task); 
+        //$this->authorize('update', $task); 
         
         $task->update([
             'is_completed' => !$task->is_completed
@@ -57,7 +57,7 @@ class TaskController extends Controller
   
     public function destroy(Task $task)
     {
-        $this->authorize('delete', $task);
+        //$this->authorize('delete', $task);
         
         $task->delete();
 
