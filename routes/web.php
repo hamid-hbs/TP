@@ -6,16 +6,11 @@ use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route as RouteFacade;
 use Illuminate\Support\Facades\Auth;
 
-Route::get('/', function () {
-    // Si l'utilisateur est authentifié, on le redirige vers ses tâches.
-    if (Auth::check()) {
-        return redirect()->route('tasks.index');
-    }
-});
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/', [TaskController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('tasks.index');
 
 
 
