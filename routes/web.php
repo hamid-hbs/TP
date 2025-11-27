@@ -20,4 +20,4 @@ Route::middleware('auth')->group(function () {
 require __DIR__.'/auth.php';
 
 
-//Mise à jour du commit d'Alex
+//Mise à jour du commit d'Alex ujnd lndnlk
