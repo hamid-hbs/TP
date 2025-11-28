@@ -8,6 +8,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class Task
@@ -27,24 +28,23 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Task extends Model
 {
-	protected $table = 'tasks';
+    use HasFactory;
 
-	protected $casts = [
-		'is_completed' => 'bool',
-		'due_date' => 'datetime',
-		'user_id' => 'int'
-	];
+    protected $fillable = [
+        'title',
+        'description',
+        'is_completed',
+        'due_date',
+        'user_id',
+    ];
 
-	protected $fillable = [
-		'title',
-		'description',
-		'is_completed',
-		'due_date',
-		'user_id'
-	];
+    protected $casts = [
+        'is_completed' => 'boolean',
+        'due_date' => 'datetime',
+    ];
 
-	public function user()
-	{
-		return $this->belongsTo(User::class);
-	}
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
