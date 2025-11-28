@@ -1,0 +1,77 @@
+# Version du format docker-compose (optionnelle avec Docker Compose V2)
+version: '3.8'
+
+# Déclaration de tous les services (conteneurs)
+services:
+
+  # --- SERVICE LARAVEL (PHP-FPM) ---
+  app:
+    # Construction de l'image à partir du Dockerfile présent dans ton projet
+    build:
+      context: .          # Dossier où Docker doit chercher les fichiers
+      dockerfile: Dockerfile   # Nom du fichier Dockerfile à utiliser
+
+    container_name: laravel_app   # Nom du conteneur (plus facile pour exécuter des commandes)
+
+    # Synchronisation de ton projet local avec /var/www dans le conteneur
+    volumes:
+      - .:/var/www
+
+    # Le conteneur "app" doit se lancer après MySQL (db)
+    depends_on:
+      - db
+
+    # Expose le port PHP-FPM 9000 du conteneur sur le port 9000 de ta machine
+    ports:
+      - "9000:9000"
+
+  # --- SERVICE NGINX (SERVEUR WEB) ---
+  web:
+    # Image officielle de Nginx depuis Docker Hub
+    image: nginx:latest
+
+    container_name: laravel_nginx   # Nom du conteneur Nginx
+
+    # Expose le port 80 (dans Docker) sur le port 8000 (sur ton PC)
+    # Tu accèdes à ton site via : http://localhost:8000
+    ports:
+      - "8000:80"
+
+    volumes:
+      # Donne accès au code Laravel à Nginx
+      - .:/var/www
+
+      # Remplace la configuration Nginx par ton fichier local
+      # -> c'est ici que tu définis les routes Laravel (index.php)
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
+
+    # Nginx doit attendre que PHP (app) soit démarré
+    depends_on:
+      - app
+
+  # --- SERVICE MYSQL (BASE DE DONNÉES) ---
+  db:
+    image: mysql:8               # Version de MySQL utilisée
+    container_name: laravel_db   # Nom du conteneur MySQL
+    restart: always              # Redémarre automatiquement en cas d’arrêt
+
+    # Variables d'environnement de configuration MySQL
+    environment:
+      MYSQL_ROOT_PASSWORD: root   # Mot de passe de l'utilisateur root
+      MYSQL_DATABASE: tp_ana      # La base de données à créer automatiquement
+      MYSQL_USER: laravel         # Nom de l'utilisateur MySQL
+      MYSQL_PASSWORD: laravel     # Mot de passe de cet utilisateur
+
+    # Expose MySQL : docker(3306) -> local (3307)
+    # Tu te connectes via 127.0.0.1:3307
+    ports:
+      - "3307:3306"
+
+    # Volume persistant pour ne PAS perdre les données après un redémarrage
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+# --- DÉCLARATION DES VOLUMES PERSISTANTS ---
+volumes:
+  mysql_data:   # Stocke les données MySQL en permanence sur ta machine
+
